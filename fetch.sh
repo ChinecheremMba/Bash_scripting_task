@@ -1,48 +1,59 @@
 #!/bin/bash
 
-# Function to extract bookmarks from Chrome
-extract_chrome_bookmarks() {
-    local bookmarks_file="$HOME/.config/google-chrome/Default/Bookmarks"
-    jq -r --arg keyword "$1" '.roots | .. | objects | select(.url | contains($keyword)) | .name + ": " + .url' "$bookmarks_file"
-}
-
-# Function to extract bookmarks from Firefox
-extract_firefox_bookmarks() {
-    local bookmarks_file="$HOME/.mozilla/firefox/*.default-release/places.sqlite"
-    sqlite3 "$bookmarks_file" "SELECT title, url FROM moz_places WHERE title LIKE '%$1%' OR url LIKE '%$1%';"
-}
-
-# Function to extract bookmarks from Brave Browser
-extract_brave_bookmarks() {
-    local bookmarks_file="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
-    jq -r --arg keyword "$1" '.roots | .. | objects | select(.url | contains($keyword)) | .name + ": " + .url' "$bookmarks_file"
-}
-
-# Function to extract bookmarks from Chromium
-extract_chromium_bookmarks() {
-    local bookmarks_file="$HOME/.config/chromium/Default/Bookmarks"
-    jq -r --arg keyword "$1" '.roots | .. | objects | select(.url | contains($keyword)) | .name + ": " + .url' "$bookmarks_file"
-}
-
-# Main function
-main() {
-    if [ -z "$1" ]; then
-        echo "Bookmark bar"
-        exit 1
+# Function to fetch bookmarks from Google Chrome
+fetch_chrome_bookmarks() {
+    chrome_bookmarks_file="$HOME/mnt/c/Users/'chi isiaki'/AppData/local/Google/chrome/'User Data'/Default/Bookmarks
+    if [ -f "$chrome_bookmarks_file" ]; then
+        grep -oP '"url": "\K(.*)(?=")' "$chrome_bookmarks_file" | grep "$Twitter"
+    else
+        echo "Google Chrome bookmarks file not found."
     fi
-
-    echo "Chrome Bookmarks:"
-    extract_chrome_bookmarks "$1"
-
-    echo -e "\nFirefox Bookmarks:"
-    extract_firefox_bookmarks "$1"
-
-    echo -e "\nBrave Bookmarks:"
-    extract_brave_bookmarks "$1"
-
-    echo -e "\nChromium Bookmarks:"
-    extract_chromium_bookmarks "$1"
 }
 
-# Run main function with keyword passed to the script
-main "$@"
+# Function to fetch bookmarks from Mozilla Firefox
+fetch_firefox_bookmarks() {
+    firefox_bookmarks_file="$HOME/.mozilla/firefox/*.default/places.sqlite"
+    if [ -f "$firefox_bookmarks_file" ]; then
+        sqlite3 "$firefox_bookmarks_file" "SELECT moz_bookmarks.title, moz_places.url FROM moz_bookmarks JOIN moz_places ON moz_bookmarks.fk=moz_places.id WHERE moz_bookmarks.title LIKE '%$1%';"
+    else
+        echo "Mozilla Firefox bookmarks file not found."
+    fi
+}
+
+# Function to fetch bookmarks from Brave Browser
+fetch_brave_bookmarks() {
+    brave_bookmarks_file="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
+    if [ -f "$brave_bookmarks_file" ]; then
+        grep -oP '"url": "\K(.*)(?=")' "$brave_bookmarks_file" | grep "$Twitter"
+    else
+        echo "Brave Browser bookmarks file not found."
+    fi
+}
+
+# Function to fetch bookmarks from Chromium
+fetch_chromium_bookmarks() {
+    chromium_bookmarks_file="$HOME/.config/chromium/Default/Bookmarks"
+    if [ -f "$chromium_bookmarks_file" ]; then
+        grep -oP '"url": "\K(.*)(?=")' "$chromium_bookmarks_file" | grep "$Twitter"
+    else
+        echo "Chromium bookmarks file not found."
+    fi
+}
+
+# Main function to fetch bookmarks from all browsers
+main() {
+    Agrument="$Twitter"
+    fetch_chrome_bookmarks "$Agrument"
+    fetch_firefox_bookmarks "$Agrument"
+    fetch_brave_bookmarks "$Agrument"
+    fetch_chromium_bookmarks "$Agrument"
+}
+
+# Check if argument is provided
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <Agrument>"
+    exit 1
+fi
+
+# Call the main function with the provided argument
+main "$Twitter"
