@@ -2,9 +2,9 @@
 
 # Function to fetch bookmarks from Google Chrome
 fetch_chrome_bookmarks() {
-    chrome_bookmarks_file="$HOME/mnt/c/Users/'chi isiaki'/AppData/local/Google/chrome/'User Data'/Default/Bookmarks
+    chrome_bookmarks_file="$HOME/mnt/c/Users/chi\ isiaki/AppData/local/Google/chrome/User\ Data/Default/Bookmarks"
     if [ -f "$chrome_bookmarks_file" ]; then
-        grep -oP '"url": "\K(.*)(?=")' "$chrome_bookmarks_file" | grep "$Twitter"
+        grep -oP '"url":"\K(.*)(?=")' "$chrome_bookmarks_file" | grep "$Cloud"
     else
         echo "Google Chrome bookmarks file not found."
     fi
@@ -24,7 +24,7 @@ fetch_firefox_bookmarks() {
 fetch_brave_bookmarks() {
     brave_bookmarks_file="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
     if [ -f "$brave_bookmarks_file" ]; then
-        grep -oP '"url": "\K(.*)(?=")' "$brave_bookmarks_file" | grep "$Twitter"
+        grep -oP '"url": "\K(.*)(?=")' "$brave_bookmarks_file" | grep "$Cloud"
     else
         echo "Brave Browser bookmarks file not found."
     fi
@@ -34,7 +34,7 @@ fetch_brave_bookmarks() {
 fetch_chromium_bookmarks() {
     chromium_bookmarks_file="$HOME/.config/chromium/Default/Bookmarks"
     if [ -f "$chromium_bookmarks_file" ]; then
-        grep -oP '"url": "\K(.*)(?=")' "$chromium_bookmarks_file" | grep "$Twitter"
+        grep -oP '"url": "\K(.*)(?=")' "$chromium_bookmarks_file" | grep "$Cloud"
     else
         echo "Chromium bookmarks file not found."
     fi
@@ -42,7 +42,7 @@ fetch_chromium_bookmarks() {
 
 # Main function to fetch bookmarks from all browsers
 main() {
-    Agrument="$Twitter"
+    Agrument="$Cloud"
     fetch_chrome_bookmarks "$Agrument"
     fetch_firefox_bookmarks "$Agrument"
     fetch_brave_bookmarks "$Agrument"
@@ -51,9 +51,11 @@ main() {
 
 # Check if argument is provided
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <Agrument>"
+    echo "Usage: $0 Agrument"
     exit 1
 fi
 
 # Call the main function with the provided argument
-main "$Twitter"
+main "$Cloud"
+
+
